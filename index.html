@@ -1,0 +1,483 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOA - Voice Of Adi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QRCode.js Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-sky-500/20">
+                    VOA
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white">VOA</h1>
+                    <p class="text-xs text-slate-400">Voice Of Adi</p>
+                </div>
+            </div>
+
+            <!-- Header Actions / Buttons -->
+            <div class="flex items-center space-x-2">
+                <!-- QR Code Modal Trigger Button -->
+                <button onclick="openQrModal()" class="flex items-center space-x-2 text-xs bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 py-2 px-3 rounded-lg transition font-medium">
+                    <i class="fa-solid fa-qrcode text-sm"></i>
+                    <span class="hidden sm:inline">QR Code Form</span>
+                </button>
+
+                <!-- Target Number Settings -->
+                <button onclick="toggleConfigModal()" class="flex items-center space-x-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-3 rounded-lg border border-slate-700 transition">
+                    <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                    <span class="hidden sm:inline">No. Tujuan:</span>
+                    <span id="displayTargetNum" class="font-mono font-medium text-emerald-400">6289687322997</span>
+                    <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        <div class="text-center max-w-2xl mx-auto mb-8">
+            <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/20 inline-block mb-3">Layanan Aspirasi & Komplain</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Voice Of Adi (VOA)</h2>
+            <p class="text-slate-400 text-sm mt-2">Sampaikan masukan, saran, atau komplain Anda secara cepat. Hasil pengisian langsung terkirim otomatis ke WhatsApp pengelola.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Side: Form Component -->
+            <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <form id="voaForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    
+                    <!-- Type Selection -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Kategori Pesan <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative flex items-center justify-center p-3 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 cursor-pointer transition text-sm font-medium">
+                                <input type="radio" name="category" value="Saran" checked onchange="updatePreview()" class="peer hidden">
+                                <span class="peer-checked:text-sky-400 flex items-center space-x-2 text-slate-400">
+                                    <i class="fa-regular fa-lightbulb"></i>
+                                    <span>Saran / Input</span>
+                                </span>
+                                <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-sky-500 pointer-events-none"></div>
+                            </label>
+
+                            <label class="relative flex items-center justify-center p-3 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 cursor-pointer transition text-sm font-medium">
+                                <input type="radio" name="category" value="Komplain" onchange="updatePreview()" class="peer hidden">
+                                <span class="peer-checked:text-rose-400 flex items-center space-x-2 text-slate-400">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    <span>Komplain / Keluhan</span>
+                                </span>
+                                <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-rose-500 pointer-events-none"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div>
+                        <label for="fullName" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Nama Lengkap <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                            <input type="text" id="fullName" required placeholder="Contoh: Budi Santoso" oninput="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+
+                    <!-- Contact WhatsApp / Email -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="contactPhone" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">No. WhatsApp Pelapor <span class="text-rose-500">*</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <input type="tel" id="contactPhone" required placeholder="08123456789" oninput="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="contactEmail" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Email (Opsional)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </div>
+                                <input type="email" id="contactEmail" placeholder="nama@email.com" oninput="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Department -->
+                    <div>
+                        <label for="department" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Departemen / Divisi Tujuan <span class="text-rose-500">*</span></label>
+                        <select id="department" required onchange="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                            <option value="Layanan Pelanggan / Customer Service">Layanan Pelanggan (Customer Service)</option>
+                            <option value="Divisi IT & Sistem">Divisi IT & Sistem</option>
+                            <option value="Manajemen Operasional">Manajemen Operasional</option>
+                            <option value="Keuangan & Pembayaran">Keuangan & Pembayaran</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <!-- Subject -->
+                    <div>
+                        <label for="subject" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Subjek / Judul Ringkas <span class="text-rose-500">*</span></label>
+                        <input type="text" id="subject" required placeholder="Contoh: Kendala Pembayaran / Usulan Fitur Baru" oninput="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition">
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Rincian Pesan / Deskripsi <span class="text-rose-500">*</span></label>
+                        <textarea id="description" rows="4" required placeholder="Tuliskan secara lengkap saran atau komplain Anda..." oninput="updatePreview()" class="w-full bg-slate-800/70 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition resize-none"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.99]">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span>Kirim Pesan via WhatsApp</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Side: Real-time Message Preview -->
+            <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between h-full">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h3 class="font-semibold text-slate-200 text-sm uppercase tracking-wider">Preview Pesan WA</h3>
+                        </div>
+                        <button onclick="copyFormattedText()" title="Salin Teks" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg border border-slate-700 transition flex items-center space-x-1">
+                            <i class="fa-regular fa-copy"></i>
+                            <span id="copyBtnText">Salin</span>
+                        </button>
+                    </div>
+
+                    <!-- WhatsApp Chat Mockup Frame -->
+                    <div class="bg-slate-950 rounded-xl p-4 border border-slate-800/80 font-mono text-xs leading-relaxed text-slate-300 whitespace-pre-wrap overflow-y-auto max-h-[380px] custom-scrollbar shadow-inner" id="previewContainer">
+                        <!-- Dynamic text injected here -->
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-lock text-slate-600"></i> Tujuan: <b class="text-emerald-400 font-mono">+62 896-8732-2997</b>
+                    </span>
+                    <span>VOA (Voice Of Adi)</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: QR Code Generator -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl relative text-center">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="w-12 h-12 bg-sky-500/10 border border-sky-500/20 text-sky-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-qrcode text-xl"></i>
+            </div>
+            
+            <h3 class="text-lg font-bold text-white mb-1">Scan Barcode / QR Code</h3>
+            <p class="text-xs text-slate-400 mb-5">Scan QR Code di bawah untuk membuka Formulir Komplain & Masukan VOA (Voice Of Adi)</p>
+
+            <!-- QR Code Container -->
+            <div class="bg-white p-4 rounded-xl inline-block shadow-lg mb-4">
+                <div id="qrcode" class="flex justify-center"></div>
+            </div>
+
+            <p class="text-[11px] text-slate-400 mb-4">Nomor WhatsApp Tujuan:<br><span class="font-mono text-emerald-400 font-bold text-xs">+62 896-8732-2997</span></p>
+
+            <button onclick="closeQrModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Configuration for WhatsApp Recipient Number -->
+    <div id="configModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+            <button onclick="toggleConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Pengaturan Nomor Tujuan</h3>
+                    <p class="text-xs text-slate-400">Tentukan nomor WhatsApp pengelola/admin VOA</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="modalPhoneInput" class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Nomor WhatsApp Admin</label>
+                    <input type="text" id="modalPhoneInput" placeholder="Contoh: 6289687322997" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <p class="text-[11px] text-slate-500 mt-1">Gunakan kode negara di awal (misal: <b>62896...</b>). Jangan gunakan tanda + atau spasi.</p>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button onclick="toggleConfigModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 text-xs font-medium hover:bg-slate-800">
+                        Batal
+                    </button>
+                    <button onclick="saveTargetPhone()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium shadow-lg shadow-emerald-600/20">
+                        Simpan Nomor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transition-opacity duration-300 opacity-0 pointer-events-none z-50">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toastMsg" class="text-xs font-medium">Pesan berhasil dikirim!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-500">
+            &copy; <span id="currentYear"></span> <b>VOA - Voice Of Adi</b>. Sistem Layanan Pengaduan & Aspirasi (+62 896-8732-2997).
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // Default Target Phone Number (+62 89687322997)
+        let targetPhoneNumber = "6289687322997";
+        let qrCodeObj = null;
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('currentYear').innerText = new Date().getFullYear();
+            
+            // Check stored number if available
+            const savedNum = localStorage.getItem('voa_target_phone');
+            if (savedNum) {
+                targetPhoneNumber = savedNum;
+            }
+            document.getElementById('displayTargetNum').innerText = targetPhoneNumber;
+            document.getElementById('modalPhoneInput').value = targetPhoneNumber;
+
+            updatePreview();
+        });
+
+        // Open QR Code Modal
+        function openQrModal() {
+            const qrModal = document.getElementById('qrModal');
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = "";
+
+            const pageUrl = window.location.href;
+
+            qrCodeObj = new QRCode(qrContainer, {
+                text: pageUrl,
+                width: 180,
+                height: 180,
+                colorDark: "#0284c7",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            qrModal.classList.remove('hidden');
+        }
+
+        // Close QR Code Modal
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        // Toggle Settings Modal
+        function toggleConfigModal() {
+            const modal = document.getElementById('configModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Save Target Phone Number
+        function saveTargetPhone() {
+            let input = document.getElementById('modalPhoneInput').value.trim();
+            input = input.replace(/[^0-9]/g, '');
+
+            if (input.startsWith('0')) {
+                input = '62' + input.substring(1);
+            }
+
+            if (!input || input.length < 8) {
+                showToast("Nomor HP tidak valid. Masukkan minimal 8 digit.", "error");
+                return;
+            }
+
+            targetPhoneNumber = input;
+            localStorage.setItem('voa_target_phone', targetPhoneNumber);
+            document.getElementById('displayTargetNum').innerText = targetPhoneNumber;
+            
+            toggleConfigModal();
+            showToast("Nomor WhatsApp tujuan berhasil disimpan!");
+            updatePreview();
+        }
+
+        // Format message preview string
+        function generateMessageText() {
+            const categoryEl = document.querySelector('input[name="category"]:checked');
+            const category = categoryEl ? categoryEl.value : 'Saran';
+            const fullName = document.getElementById('fullName').value.trim() || '[Nama Lengkap]';
+            const contactPhone = document.getElementById('contactPhone').value.trim() || '[No WhatsApp Pelapor]';
+            const contactEmail = document.getElementById('contactEmail').value.trim() || '-';
+            const department = document.getElementById('department').value || '[Departemen]';
+            const subject = document.getElementById('subject').value.trim() || '[Judul Subjek]';
+            const description = document.getElementById('description').value.trim() || '[Deskripsi lengkap masukan/komplain]';
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const emojiCategory = category === 'Komplain' ? '🚨' : '💡';
+
+            return `${emojiCategory} *[VOA - Voice Of Adi]* ${emojiCategory}\n` +
+                   `📌 *LAPORAN ${category.toUpperCase()}*\n` +
+                   `------------------------------------------\n` +
+                   `📅 *Waktu:* ${dateStr}\n\n` +
+                   `👤 *NAMA PELAPOR:* ${fullName}\n` +
+                   `📱 *NO. WA PELAPOR:* ${contactPhone}\n` +
+                   `📧 *EMAIL:* ${contactEmail}\n` +
+                   `🎯 *DEPARTEMEN TUJUAN:* ${department}\n` +
+                   `📌 *SUBJEK:* ${subject}\n\n` +
+                   `📝 *RINCIAN ${category.toUpperCase()}:*\n` +
+                   `${description}\n\n` +
+                   `------------------------------------------\n` +
+                   `_Pesan dikirim melalui Layanan VOA (Voice Of Adi)_`;
+        }
+
+        // Update WhatsApp preview in real-time
+        function updatePreview() {
+            const formattedMsg = generateMessageText();
+            document.getElementById('previewContainer').innerText = formattedMsg;
+        }
+
+        // Copy content to clipboard
+        function copyFormattedText() {
+            const textToCopy = generateMessageText();
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                const btnText = document.getElementById('copyBtnText');
+                btnText.innerText = "Tersalin!";
+                setTimeout(() => {
+                    btnText.innerText = "Salin";
+                }, 2000);
+                showToast("Teks preview berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin teks.", "error");
+            } finally {
+                document.body.removeChild(tempTextArea);
+            }
+        }
+
+        // Handle Submit and redirect to WhatsApp
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const formattedMsg = generateMessageText();
+            const encodedMsg = encodeURIComponent(formattedMsg);
+
+            // Construct WhatsApp URL
+            const waUrl = `https://wa.me/${targetPhoneNumber}?text=${encodedMsg}`;
+
+            showToast("Mengarahkan ke WhatsApp...");
+
+            // Open WhatsApp
+            setTimeout(() => {
+                window.open(waUrl, '_blank');
+            }, 800);
+        }
+
+        // Custom Toast Helper
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            toastMsg.innerText = message;
+            
+            if (type === "error") {
+                toast.classList.remove('bg-emerald-600');
+                toast.classList.add('bg-rose-600');
+            } else {
+                toast.classList.remove('bg-rose-600');
+                toast.classList.add('bg-emerald-600');
+            }
+
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+```
